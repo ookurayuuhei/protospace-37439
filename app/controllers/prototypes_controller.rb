@@ -11,7 +11,8 @@ class PrototypesController < ApplicationController
   end
 
   def create
-    if Prototype.create(prototype_params)
+     @prototype=Prototype.new(prototype_params)
+     if @prototype.save
       redirect_to root_path
     else
       render :new
@@ -20,15 +21,15 @@ class PrototypesController < ApplicationController
 
   def show
     @prototype = Prototype.find(params[:id])
-    
   end
+
   def edit
     @prototype = Prototype.find(params[:id])
   end
 
   def update
-    prototype = Prototype.find(params[:id])
-    if prototype.update(prototype_params)
+    @prototype = Prototype.find(params[:id])
+    if @prototype.update(prototype_params)
       redirect_to root_path
     else
       render :edit
@@ -40,12 +41,11 @@ class PrototypesController < ApplicationController
     params.require(:prototype).permit(:title, :catch_copy, :concept, :image).merge(user_id: current_user.id)
   end
 
-  def set_prototype
+  def move_to_index
     @prototype = Prototype.find(params[:id])
-  end
-
-  def contributor_confirmation
-    redirect_to root_path unless current_user == @prototype.user
+    unless current_user.id == @prototype.user.id
+      redirect_to root_path
+   end
   end
 end
 
